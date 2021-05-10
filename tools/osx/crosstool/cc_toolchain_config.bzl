@@ -63,6 +63,8 @@ def _impl(ctx):
         toolchain_identifier = "darwin_arm64e"
     elif (ctx.attr.cpu == "ios_arm64"):
         toolchain_identifier = "ios_arm64"
+    elif (ctx.attr.cpu == "ios_sim_arm64"):
+        toolchain_identifier = "ios_sim_arm64"
     elif (ctx.attr.cpu == "ios_arm64e"):
         toolchain_identifier = "ios_arm64e"
     elif (ctx.attr.cpu == "ios_armv7"):
@@ -94,6 +96,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -110,6 +113,8 @@ def _impl(ctx):
 
     if (ctx.attr.cpu == "ios_arm64"):
         target_system_name = "arm64-apple-ios"
+    elif (ctx.attr.cpu == "ios_sim_arm64"):
+        target_system_name = "arm64-apple-ios-simulator"
     elif (ctx.attr.cpu == "tvos_arm64"):
         target_system_name = "arm64-apple-tvos"
     elif (ctx.attr.cpu == "watchos_arm64_32"):
@@ -151,6 +156,8 @@ def _impl(ctx):
         target_cpu = "darwin_arm64e"
     elif (ctx.attr.cpu == "ios_arm64"):
         target_cpu = "ios_arm64"
+    elif (ctx.attr.cpu == "ios_sim_arm64"):
+        target_cpu = "ios_sim_arm64"
     elif (ctx.attr.cpu == "ios_arm64e"):
         target_cpu = "ios_arm64e"
     elif (ctx.attr.cpu == "ios_armv7"):
@@ -177,6 +184,7 @@ def _impl(ctx):
     if (ctx.attr.cpu == "armeabi-v7a"):
         target_libc = "armeabi-v7a"
     elif (ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -206,6 +214,7 @@ def _impl(ctx):
     elif (ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -227,6 +236,7 @@ def _impl(ctx):
     elif (ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -343,6 +353,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -466,6 +477,39 @@ def _impl(ctx):
                 "user_compile_flags",
                 "sysroot",
                 "unfiltered_compile_flags",
+            ],
+            tools = [
+                tool(
+                    path = "wrapped_clang",
+                    execution_requirements = xcode_execution_requirements,
+                ),
+            ],
+        )
+    elif (ctx.attr.cpu == "ios_sim_arm64"):
+        objc_compile_action = action_config(
+            action_name = ACTION_NAMES.objc_compile,
+            flag_sets = [
+                flag_set(
+                    flag_groups = [flag_group(flags = ["-arch", "arm64"])],
+                ),
+            ],
+            implies = [
+                "compiler_input_flags",
+                "compiler_output_flags",
+                "objc_actions",
+                "apply_default_compiler_flags",
+                "apply_default_warnings",
+                "framework_paths",
+                "preprocessor_defines",
+                "include_system_dirs",
+                "version_min",
+                "objc_arc",
+                "no_objc_arc",
+                "apple_env",
+                "user_compile_flags",
+                "sysroot",
+                "unfiltered_compile_flags",
+                "apply_simulator_compiler_flags",
             ],
             tools = [
                 tool(
@@ -800,6 +844,7 @@ def _impl(ctx):
             ],
         )
     elif (ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "tvos_arm64" or
           ctx.attr.cpu == "darwin_arm64"):
         objcpp_executable_action = action_config(
@@ -1213,6 +1258,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -1295,6 +1341,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -1358,6 +1405,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -1472,6 +1520,7 @@ def _impl(ctx):
             ],
         )
     elif (ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "tvos_arm64" or
           ctx.attr.cpu == "darwin_arm64"):
         objcpp_compile_action = action_config(
@@ -1755,6 +1804,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -1816,6 +1866,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -1912,6 +1963,7 @@ def _impl(ctx):
             ],
         )
     elif (ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "tvos_arm64" or
           ctx.attr.cpu == "darwin_arm64"):
         objc_archive_action = action_config(
@@ -2240,6 +2292,7 @@ def _impl(ctx):
             ],
         )
     elif (ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "tvos_arm64" or
           ctx.attr.cpu == "darwin_arm64"):
         objc_executable_action = action_config(
@@ -2676,6 +2729,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -2763,6 +2817,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -2828,6 +2883,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -2946,6 +3002,7 @@ def _impl(ctx):
             ],
         )
     elif (ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "tvos_arm64"):
         objc_fully_link_action = action_config(
             action_name = "objc-fully-link",
@@ -3211,6 +3268,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -3253,6 +3311,7 @@ def _impl(ctx):
 
     if (ctx.attr.cpu == "armeabi-v7a" or
         ctx.attr.cpu == "ios_arm64" or
+        ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "ios_arm64e" or
         ctx.attr.cpu == "ios_armv7" or
         ctx.attr.cpu == "ios_i386" or
@@ -3409,6 +3468,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -3504,6 +3564,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "tvos_arm64" or
@@ -3554,6 +3615,7 @@ def _impl(ctx):
 
     if (ctx.attr.cpu == "armeabi-v7a" or
         ctx.attr.cpu == "ios_arm64" or
+        ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "ios_arm64e" or
         ctx.attr.cpu == "ios_armv7" or
         ctx.attr.cpu == "ios_i386" or
@@ -3675,6 +3737,26 @@ def _impl(ctx):
                                 "-no-canonical-prefixes",
                                 "-target",
                                 "arm64-apple-ios",
+                            ],
+                        ),
+                    ],
+                ),
+            ],
+        )
+    elif (ctx.attr.cpu == "ios_sim_arm64"):
+        default_link_flags_feature = feature(
+            name = "default_link_flags",
+            enabled = True,
+            flag_sets = [
+                flag_set(
+                    actions = all_link_actions +
+                              ["objc-executable", "objc++-executable"],
+                    flag_groups = [
+                        flag_group(
+                            flags = [
+                                "-no-canonical-prefixes",
+                                "-target",
+                                "arm64-apple-ios-simulator",
                             ],
                         ),
                     ],
@@ -4051,7 +4133,8 @@ def _impl(ctx):
         # This stub doesn't have a sensible value for this feature
         version_min_feature = feature(name = "version_min")
     elif (ctx.attr.cpu == "ios_i386" or
-          ctx.attr.cpu == "ios_x86_64"):
+          ctx.attr.cpu == "ios_x86_64" or
+          ctx.attr.cpu == "ios_sim_arm64"):
         version_min_feature = feature(
             name = "version_min",
             flag_sets = [
@@ -4562,6 +4645,7 @@ def _impl(ctx):
 
     if (ctx.attr.cpu == "armeabi-v7a" or
         ctx.attr.cpu == "ios_arm64" or
+        ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "ios_arm64e" or
         ctx.attr.cpu == "ios_armv7" or
         ctx.attr.cpu == "ios_i386" or
@@ -4783,6 +4867,37 @@ def _impl(ctx):
                                 "-D__TIME__=\"redacted\"",
                                 "-target",
                                 "arm64-apple-ios",
+                            ],
+                        ),
+                    ],
+                ),
+            ],
+        )
+    elif (ctx.attr.cpu == "ios_sim_arm64"):
+        unfiltered_compile_flags_feature = feature(
+            name = "unfiltered_compile_flags",
+            flag_sets = [
+                flag_set(
+                    actions = [
+                        ACTION_NAMES.assemble,
+                        ACTION_NAMES.preprocess_assemble,
+                        ACTION_NAMES.c_compile,
+                        ACTION_NAMES.cpp_compile,
+                        ACTION_NAMES.cpp_header_parsing,
+                        ACTION_NAMES.cpp_module_compile,
+                        ACTION_NAMES.cpp_module_codegen,
+                        ACTION_NAMES.linkstamp_compile,
+                    ],
+                    flag_groups = [
+                        flag_group(
+                            flags = [
+                                "-no-canonical-prefixes",
+                                "-Wno-builtin-macro-redefined",
+                                "-D__DATE__=\"redacted\"",
+                                "-D__TIMESTAMP__=\"redacted\"",
+                                "-D__TIME__=\"redacted\"",
+                                "-target",
+                                "arm64-apple-ios-simulator",
                             ],
                         ),
                     ],
@@ -5337,6 +5452,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -5569,6 +5685,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
           ctx.attr.cpu == "ios_x86_64" or
@@ -5779,6 +5896,7 @@ def _impl(ctx):
     elif (ctx.attr.cpu == "armeabi-v7a" or
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -5910,6 +6028,7 @@ def _impl(ctx):
         )
     elif (ctx.attr.cpu == "armeabi-v7a" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
@@ -5970,6 +6089,7 @@ def _impl(ctx):
     )
 
     if (ctx.attr.cpu == "ios_arm64" or
+        ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "ios_arm64e" or
         ctx.attr.cpu == "ios_armv7" or
         ctx.attr.cpu == "tvos_arm64" or
@@ -6083,6 +6203,7 @@ def _impl(ctx):
     )
 
     if (ctx.attr.cpu == "ios_arm64" or
+        ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "ios_arm64e" or
         ctx.attr.cpu == "ios_armv7" or
         ctx.attr.cpu == "ios_i386" or
@@ -6356,6 +6477,7 @@ def _impl(ctx):
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e" or
           ctx.attr.cpu == "ios_arm64" or
+          ctx.attr.cpu == "ios_sim_arm64" or
           ctx.attr.cpu == "ios_arm64e" or
           ctx.attr.cpu == "ios_armv7" or
           ctx.attr.cpu == "ios_i386" or
